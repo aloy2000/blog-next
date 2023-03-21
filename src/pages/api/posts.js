@@ -1,13 +1,18 @@
 import PostModel from "@/api/db/models/PostModel.js"
 import validate from "@/api/middlewares/validate.js"
 import mw from "@/api/mw.js"
+import Joi from 'joi';
 import {
   boolValidator,
+  idValidator,
   limitValidator,
   orderFieldValidator,
   orderValidator,
   pageValidator,
+  stringValidator,
+
 } from "@/validators.js"
+import UserModel from "@/api/db/models/UserModel";
 
 const handler = mw({
   GET: [
@@ -18,6 +23,7 @@ const handler = mw({
         orderField: orderFieldValidator(["title", "content"]).default("title"),
         order: orderValidator.default("desc"),
         isPublished: boolValidator.default(true),
+
       },
     }),
     async ({
@@ -54,6 +60,89 @@ const handler = mw({
       })
     },
   ],
+  DELETE: [
+    validate({
+      params: {
+        id: idValidator,
+      },
+    }),
+    async (req) => {
+      const request = req.req
+      const res = req.res
+      const { id } = request.query
+      try {
+        const numDelete = await PostModel.query().deleteById(id);
+        if (!numDelete) {
+          res.status(404).send({ error: "post not found" })
+        } else {
+          res.status(200).send({ response: `post with id ${id} deleted` })
+        }
+      } catch (error) {
+        console.log("error is occuring:", error)
+        res.status(500).send({ error })
+      }
+
+    }
+  ],
+  PUT: [
+    validate({
+      params: {
+        id: idValidator,
+      },
+      body: {
+        title: stringValidator,
+        content: stringValidator,
+      },
+    }),
+    async (req) => {
+      const request = req.req
+      const res = req.res
+      const { title, content } = request.body;
+
+      try {
+        console.log("params:", request.query);
+        const post = await PostModel.query().findById(request.query.id);
+        if (!post) {
+          return res.status(404).send({ message: "Post not found!" })
+        }
+        await post.$query().patch({ title, content, updatedAt: new Date() })
+        res.send(post)
+
+      } catch (error) {
+        console.log("error is occuring:", error)
+        res.status(500).send({ error })
+      }
+    },
+
+  ],
+  POST: [
+    validate({
+      body: {
+        title: stringValidator,
+        content: stringValidator,
+      }
+    }),
+    async (req) => {
+
+      const request = req.req
+      const res = req.res
+      const { title, content, userId } = request.body;
+
+      try {
+        const user = await UserModel.query().findById(userId)
+        if (!user) {
+          return res.status(404).send({ message: "user not found" });
+        }
+        const post = await PostModel.query().insert({ title, content, userId: user.id, publishedAt: new Date() })
+        res.status(201).send(post)
+      } catch (error) {
+        console.log("error is occuring:", error)
+        res.status(500).send({ error })
+      }
+    },
+
+  ]
+
 })
 
 export default handler

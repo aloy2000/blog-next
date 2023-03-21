@@ -18,7 +18,7 @@ class PostModel extends BaseModel {
         join: {
           from: "posts.userId",
           to: "users.id",
-          modify: (query) => query.select("id", "displayName"),
+          modify: (query) => query.select("id", "name"),
         },
       },
       comments: {

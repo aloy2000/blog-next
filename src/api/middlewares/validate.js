@@ -35,8 +35,9 @@ const validate = ({ body, params, query }) => {
       }
 
       logger.error(err)
+      console.log("errorr on post method", err)
 
-      res.status(500).send({ error: "Oops. Something went wrong." })
+      res.status(500).send({ error: "Oops. Something went wrong.", err })
     }
   }
 }

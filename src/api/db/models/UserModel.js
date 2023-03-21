@@ -1,9 +1,11 @@
 import hashPassword from "@/api/db/hashPassword.js"
 import BaseModel from "@/api/db/models/BaseModel.js"
 import PostModel from "@/api/db/models/PostModel.js"
+import RoleModel from "./RoleModel"
 
 class UserModel extends BaseModel {
   static tableName = "users"
+  
 
   static relationMappings() {
     return {
@@ -33,6 +35,10 @@ class UserModel extends BaseModel {
           modify: (query) => query.whereNotNull("publishedAt"),
         },
       },
+      roles: {
+        relation: BaseModel.BelongsToOneRelation,
+        modelClass: RoleModel
+      }
     }
   }
 

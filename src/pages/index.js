@@ -32,7 +32,6 @@ const IndexPage = (props) => {
     posts: { result },
   } = props
 
-  console.log(result);
   return (
     <Page className="gap-8">
       {result.map((post) => (
