@@ -1,8 +1,8 @@
-import knexfile from "@@/knexfile.js"
-import dotenv from "dotenv"
-import { resolve } from "node:path"
+const knexfile = require('../../knexfile');
+const dotenv = require('dotenv')
+const path = require('node:path')
 
-dotenv.config({ path: resolve(".env.local") })
+dotenv.config({ path: path.resolve(".env.local") })
 
 const config = {
   port: 3000,
@@ -22,4 +22,4 @@ const config = {
   },
 }
 
-export default config
+module.exports = config

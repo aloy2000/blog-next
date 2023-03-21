@@ -8,15 +8,23 @@ export const getServerSideProps = async ({ req: { url } }) => {
     new URL(`http://example.com/${url}`).searchParams.entries()
   )
 
-  const { data } = await axios.get(
-    `http://localhost:3000/api${routes.api.posts.collection(query)}`
-  )
-
-  return {
-    props: {
-      posts: data,
-    },
+  try {
+    const { data } = await axios.get(
+      `http://localhost:3000/api${routes.api.posts.collection(query)}`)
+    return {
+      props: {
+        posts: data,
+      },
+    }
+  } catch (error) {
+    console.log("error:", error);
+    return {
+      props: {
+        posts: []
+      }
+    }
   }
+
 }
 
 const IndexPage = (props) => {
@@ -24,6 +32,7 @@ const IndexPage = (props) => {
     posts: { result },
   } = props
 
+  console.log(result);
   return (
     <Page className="gap-8">
       {result.map((post) => (

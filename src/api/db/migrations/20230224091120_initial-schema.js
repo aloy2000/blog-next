@@ -1,4 +1,4 @@
-export const up = async (knex) => {
+exports.up = async (knex) => {
   await knex.schema.createTable("users", (table) => {
     table.increments("id")
     table.text("displayName").notNullable()
@@ -32,7 +32,7 @@ export const up = async (knex) => {
   })
 }
 
-export const down = async (knex) => {
+exports.down = async (knex) => {
   await knex.schema.dropTable("rel_posts__tags")
   await knex.schema.dropTable("tags")
   await knex.schema.dropTable("comments")
