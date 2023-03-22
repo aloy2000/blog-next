@@ -13,6 +13,7 @@ import {
 } from "@/validators.js"
 import UserModel from "@/api/db/models/UserModel";
 import authenticate from "@/api/middlewares/auth";
+import RoleModel from "@/api/db/models/RoleModel";
 
 const handler = mw({
   GET: [
@@ -71,7 +72,17 @@ const handler = mw({
       const res = req.res
       const { id } = request.query
       try {
-        const numDelete = await PostModel.query().deleteById(id);
+        await authenticate(request, res)
+        const userId = request.user.id
+        const user = await UserModel.query().findById(userId)
+        const role = await RoleModel.query().findById(user.roleId)
+        console.log("user:", role.name)
+
+        if (role.name != "administrateur" && role.name != "gestionnaire") {
+          return res.status(401).send({ message: "Unauthorized request" })
+        }
+
+        const numDelete = await PostModel.query().deleteById(id)
         if (!numDelete) {
           res.status(404).send({ error: "post not found" })
         } else {
@@ -97,13 +108,18 @@ const handler = mw({
     async (req) => {
       const request = req.req
       const res = req.res
-      const { title, content } = request.body;
+      const { title, content } = request.body
 
       try {
-        console.log("params:", request.query);
-        const post = await PostModel.query().findById(request.query.id);
+
+        const post = await PostModel.query().findById(request.query.id)
         if (!post) {
           return res.status(404).send({ message: "Post not found!" })
+        }
+
+
+        if (role.name !== "administrateur" || role.name !== "gestionnaire") {
+          return res.status(401).send({ message: "Unauthorized request" })
         }
         await post.$query().patch({ title, content, updatedAt: new Date() })
         res.send(post)
@@ -126,14 +142,22 @@ const handler = mw({
 
       const request = req.req
       const res = req.res
-      const { title, content, userId, slug_url, status } = request.body;
+      const { title, content, userId, slug_url, status } = request.body
 
       try {
         await authenticate(request, res)
+        console.log("req.user:", request.user)
         const user = await UserModel.query().findById(userId)
+
         if (!user) {
-          return res.status(404).send({ message: "user not found" });
+          return res.status(404).send({ message: "user not found" })
         }
+
+        const role = await RoleModel.query().findById(user.roleId)
+        if (role.name !== "administrateur" && role.name !== "gestionnaire") {
+          return res.status(401).send({ message: "Unauthorized request" })
+        }
+
         const post = await PostModel.query().insert({ title, content, userId: user.id, publishedAt: new Date(), slug_url, status })
         res.status(201).send(post)
       } catch (error) {
