@@ -9,7 +9,8 @@ exports.up = async (knex) => {
         table.text("lastName").notNullable()
         table.text("name").notNullable()
         table.text("email").notNullable().unique()
-        table.text("password").notNullable()
+        table.text("passwordHash").notNullable()
+        table.text("passwordSalt").notNullable()
         table.timestamps(true, true, true)
         table.integer("roleId").references("id").inTable("roles").notNullable()
 

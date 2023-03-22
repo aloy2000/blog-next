@@ -1,4 +1,4 @@
-// use : node ./utils/fakers.js to 10 users
+// use : node ./utils/fakersData.js to add data in your base
 
 
 const fakerApp = require('@faker-js/faker')
@@ -36,7 +36,8 @@ const generateUsers = async (count, roleIds) => {
             name: fakerApp.faker.name.firstName(),
             lastName: fakerApp.faker.name.lastName(),
             email: fakerApp.faker.internet.email(),
-            password: hashedPassword.toString(),
+            passwordHash: hashedPassword.toString(),
+            passwordSalt: salt.toString(),
             roleId: roleIds[randomUserIdIndex]
         };
 

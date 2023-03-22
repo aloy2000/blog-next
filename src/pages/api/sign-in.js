@@ -21,27 +21,31 @@ const handler = mw({
       },
       res,
     }) => {
-      const user = await UserModel.query().findOne({ email })
+      try {
+        const user = await UserModel.query().findOne({ email })
+        if (!user || !(await user.checkPassword(password, user.passwordHash, user.passwordSalt))) {
+          res.status(401).send({ error: "Invalid credentials" })
+          return
+        }
 
-      if (!user || !(await user.checkPassword(password))) {
-        res.status(401).send({ error: "Invalid credentials" })
-
-        return
-      }
-
-      const jwt = jsonwebtoken.sign(
-        {
-          payload: {
-            user: {
-              id: user.id,
+        const jwt = jsonwebtoken.sign(
+          {
+            payload: {
+              user: {
+                id: user.id,
+              },
             },
           },
-        },
-        config.security.jwt.secret,
-        { expiresIn: config.security.jwt.expiresIn }
-      )
+          config.security.jwt.secret,
+          { expiresIn: config.security.jwt.expiresIn }
+        )
 
-      res.send({ result: jwt })
+        console.log("user token:", jwt)
+        res.status(200).send({ result: jwt })
+      } catch (error) {
+        console.log("errorr:", error)
+        res.status(500).send({ error })
+      }
     },
   ],
 })

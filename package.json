@@ -16,7 +16,6 @@
     "deepmerge": "^4.3.0",
     "dotenv": "^16.0.3",
     "formik": "^2.2.9",
-    "joi": "^17.9.1",
     "jsonwebtoken": "^9.0.0",
     "knex": "^2.4.2",
     "next": "13.2.1",

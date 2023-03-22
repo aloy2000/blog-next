@@ -12,14 +12,15 @@ const handler = mw({
   POST: [
     validate({
       body: {
-        displayName: displayNameValidator.required(),
+        name: displayNameValidator.required(),
+        lastName: displayNameValidator.required(),
         email: emailValidator.required(),
         password: passwordValidator.required(),
       },
     }),
     async ({
       locals: {
-        body: { displayName, email, password },
+        body: { name, lastName, email, password, roleId },
       },
       res,
     }) => {
@@ -34,10 +35,12 @@ const handler = mw({
       const [passwordHash, passwordSalt] = await hashPassword(password)
 
       await UserModel.query().insertAndFetch({
-        displayName,
+        name,
+        lastName,
         email,
         passwordHash,
         passwordSalt,
+        roleId: roleId
       })
 
       res.send({ result: true })

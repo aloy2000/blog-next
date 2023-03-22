@@ -1,5 +1,5 @@
-const { default: BaseModel } = require("./BaseModel");
-const { default: UserModel } = require("./UserModel");
+import BaseModel from '@/api/db/models/BaseModel.js'
+import UserModel from '@/api/db/models/UserModel'
 
 class RoleModel extends BaseModel {
     static tableName = "roles"

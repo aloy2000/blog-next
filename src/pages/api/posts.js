@@ -1,7 +1,6 @@
 import PostModel from "@/api/db/models/PostModel.js"
 import validate from "@/api/middlewares/validate.js"
 import mw from "@/api/mw.js"
-import Joi from 'joi';
 import {
   boolValidator,
   idValidator,
@@ -13,6 +12,7 @@ import {
 
 } from "@/validators.js"
 import UserModel from "@/api/db/models/UserModel";
+import authenticate from "@/api/middlewares/auth";
 
 const handler = mw({
   GET: [
@@ -126,14 +126,15 @@ const handler = mw({
 
       const request = req.req
       const res = req.res
-      const { title, content, userId } = request.body;
+      const { title, content, userId, slug_url, status } = request.body;
 
       try {
+        await authenticate(request, res)
         const user = await UserModel.query().findById(userId)
         if (!user) {
           return res.status(404).send({ message: "user not found" });
         }
-        const post = await PostModel.query().insert({ title, content, userId: user.id, publishedAt: new Date() })
+        const post = await PostModel.query().insert({ title, content, userId: user.id, publishedAt: new Date(), slug_url, status })
         res.status(201).send(post)
       } catch (error) {
         console.log("error is occuring:", error)

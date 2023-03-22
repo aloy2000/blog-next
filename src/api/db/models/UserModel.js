@@ -2,10 +2,11 @@ import hashPassword from "@/api/db/hashPassword.js"
 import BaseModel from "@/api/db/models/BaseModel.js"
 import PostModel from "@/api/db/models/PostModel.js"
 import RoleModel from "./RoleModel"
+import comparePassword from "../comparePassword"
 
 class UserModel extends BaseModel {
   static tableName = "users"
-  
+
 
   static relationMappings() {
     return {
@@ -42,10 +43,10 @@ class UserModel extends BaseModel {
     }
   }
 
-  checkPassword = async (password) => {
-    const [passwordHash] = await hashPassword(password, this.passwordSalt)
-
-    return passwordHash === this.passwordHash
+  checkPassword = async (password, passwordHash, salt) => {
+    const isMatched = await comparePassword(password, passwordHash, salt)
+    console.log("isMatched", isMatched)
+    return isMatched
   }
 }
 
