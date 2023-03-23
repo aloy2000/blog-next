@@ -22,14 +22,14 @@ exports.up = async (knex) => {
         table.text("slug_url").notNullable().unique()
         table.integer("status").notNullable().defaultTo(0)
         table.datetime("publishedAt")
-        table.integer("userId").references("id").inTable("users").notNullable()
+        table.integer("userId").references("id").inTable("users").onDelete('CASCADE').notNullable()
         table.timestamps(true, true, true)
     })
     await knex.schema.createTable("comments", (table) => {
         table.increments("id")
         table.text("content").notNullable()
-        table.integer("userId").references("id").inTable("users").notNullable()
-        table.integer("postId").references("id").inTable("posts").notNullable()
+        table.integer("userId").references("id").inTable("users").onDelete('CASCADE').notNullable()
+        table.integer("postId").references("id").inTable("posts").onDelete('CASCADE').notNullable()
         table.timestamps(true, true, true)
     })
     await knex.schema.createTable("tags", (table) => {
@@ -37,8 +37,8 @@ exports.up = async (knex) => {
         table.text("name").notNullable()
     })
     await knex.schema.createTable("rel_posts__tags", (table) => {
-        table.integer("postId").references("id").inTable("posts").notNullable()
-        table.integer("tagId").references("id").inTable("tags").notNullable()
+        table.integer("postId").references("id").inTable("posts").onDelete('CASCADE').notNullable()
+        table.integer("tagId").references("id").inTable("tags").onDelete('CASCADE').notNullable()
     })
 }
 

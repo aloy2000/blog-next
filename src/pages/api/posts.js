@@ -113,12 +113,17 @@ const handler = mw({
       try {
 
         const post = await PostModel.query().findById(request.query.id)
+        await authenticate(request, res)
+        const userId = request.user.id
+        const user = await UserModel.query().findById(userId)
+        const role = await RoleModel.query().findById(user.roleId)
+
         if (!post) {
           return res.status(404).send({ message: "Post not found!" })
         }
 
 
-        if (role.name !== "administrateur" || role.name !== "gestionnaire") {
+        if (role.name !== "administrateur" && role.name !== "gestionnaire") {
           return res.status(401).send({ message: "Unauthorized request" })
         }
         await post.$query().patch({ title, content, updatedAt: new Date() })
@@ -146,7 +151,6 @@ const handler = mw({
 
       try {
         await authenticate(request, res)
-        console.log("req.user:", request.user)
         const user = await UserModel.query().findById(userId)
 
         if (!user) {
