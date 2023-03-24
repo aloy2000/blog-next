@@ -1,6 +1,8 @@
 import BaseModel from "@/api/db/models/BaseModel.js"
 import CommentModel from "@/api/db/models/CommentModel.js"
 import UserModel from "@/api/db/models/UserModel.js"
+import MenuModel from "./MenuModel"
+import FieldModel from "./FieldModel"
 
 class PostModel extends BaseModel {
   static tableName = "posts"
@@ -29,6 +31,31 @@ class PostModel extends BaseModel {
           to: "comments.postId",
         },
       },
+      menu: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: MenuModel,
+        join: {
+          from: "posts.id",
+          through: {
+            from: "rel_posts__menus.postId",
+            to: "rel_posts__menus.menuId",
+          },
+          to: "menus.id",
+        },
+      },
+      field: {
+        relation: BaseModel.ManyToManyRelation,
+        modelClass: FieldModel,
+        join: {
+          from: "posts.id",
+          through: {
+            from: "rel_posts__fields.postId",
+            to: "rel_posts__fields.fieldId",
+          },
+          to: "fields.id",
+        },
+      }
+
     }
   }
 }
